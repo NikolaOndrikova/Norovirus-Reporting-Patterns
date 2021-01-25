@@ -6,7 +6,7 @@ eng_map <- readOGR(dsn = 'data/Eng_Map/Eng_Map.shp', layer = "Eng_Map")
 # read in synthetic PHE norovirus data
 synth_noro_data <- read_csv("data/Synth_Noro_Data.csv")
 
-
+### REGIONAL FRACTIONS ---------------------------------------------------------
 # regional fraction of total number of primary schools - 2016
 schools_ = c(0.05156, 0.14585, 0.10651, 0.09739, 0.10585, 0.11867,  0.10806, 0.15496, 0.11116)
 
@@ -19,7 +19,6 @@ hospitals_ = c(0.05747, 0.11823, 0.10016, 0.06732, 0.10673, 0.10673, 0.13465, 0.
 regional_predictors_v = list("schools" = schools_,
                              "nurseries" = nurseries_,
                              "hospitals" = hospitals_)
-
 
 # mid-2016 population estimates
 pop_rg <- c(148432, 442876, 331343, 278396, 365266, 379042, 635561, 542018, 306112,#[00-04]
@@ -37,8 +36,7 @@ rg_colnames <- c('UKC.[00-04]', 'UKD.[00-04]', 'UKE.[00-04]', 'UKF.[00-04]', 'UK
                  'UKC.[65+', 'UKD.[65+', 'UKE.[65+', 'UKF.[65+', 'UKG.[65+', 'UKH.[65+', 'UKI.[65+', 'UKJ.[65+', 'UKK.[65+')
 colnames(pop_rg_df) <- rg_colnames
 
-# POLYMOD contact data -----------------------------------------------
-
+### POLYMOD CONTACT DATA -------------------------------------------------------
 data(polymod)
 uk_cm = contact_matrix(polymod, countries = "United Kingdom", 
                        #filter = list("phys_contact"=1),
