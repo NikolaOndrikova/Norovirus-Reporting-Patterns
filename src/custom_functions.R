@@ -1,7 +1,8 @@
+# source('./src/required_packages.R')
 
-expandRegionalPreditor <- function(my_vector,my_Matrix, n){
+expandRegionalPreditor <- function(my_vector, my_Matrix, n){
   # expand regional vectors to the shape of hhh4 data matrix
-  # n = n of age groups
+  # n = # of age groups
   
   my_df = data.frame(t(my_vector))
   new_matrix = data.matrix(my_df[rep(seq_len(nrow(my_df)), each=nrow(my_Matrix)),])

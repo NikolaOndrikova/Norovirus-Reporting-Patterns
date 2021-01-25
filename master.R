@@ -6,7 +6,7 @@ source('./src/custom_functions.R')
 source('./src/import_data.R')
 source('./src/hhh4_data_prep.R')
 
-##¢ Create the sts object for hhh4 models --------------------------------------
+### CREATE THE STS OBJECT FOR HHH4 ---------------------------------------------
 
 start_w <- 27
 start_Y <- 2014 
@@ -49,7 +49,7 @@ seasonality = c("sin(2 * pi * t/52)", "cos(2 * pi * t/52)",
                 "sin(4 * pi * t/52)", "cos(4 * pi * t/52)")
 
 
-### Specify the fixed effects options ------------------------------------------
+### SPECIFY AND FIT THE FIXED EFFECTS OPTIONS ----------------------------------
 
 ## endemic formula 1: ~group + log(schools_) + log(hospitals_) + "log(nurseries_)" + 2:(sin+cos)
 end_intrcpt_group <- reformulate(c(1,qGROUPS[-1], region_specific, seasonality),
@@ -64,9 +64,6 @@ epi_intrcpt_groupS1 <- reformulate(c(1,qGROUPS[-1],"log(pop)", seasonality),
                                    intercept = TRUE)
 
 # baseline fixed effects fits for the mixed effects models 
-# epidemic component with population gravity and POLYMOD contacts, 
-# power-law models with the given contact matrix - varying number of predictors
-
 fixed_models = list("epi_noSeason" = hhh4(nov_sts, 
                                           makehhh4Control(end_option = end_intrcpt_group,
                                                           epi_option = epi_intrcpt_group)),
@@ -76,10 +73,12 @@ fixed_models = list("epi_noSeason" = hhh4(nov_sts,
 
 gc()
 
-### Specify the random effects options -----------------------------------------
+
+### SPECIFY and FIT THE RANDOM EFFECTS OPTIONS ---------------------------------
 
 combination_grid <- expand.grid(fixed = c("end_intrcpt_group","epi_intrcpt_group", "epi_intrcpt_groupS1"), 
                                 random = c("rand_intercept", "rand_corr_intercepts"))
+
 row.names(combination_grid) <- do.call("paste", c(combination_grid, list(sep = "|")))
 
 random_opt_test <- apply(X = combination_grid, MARGIN = 1, FUN = function (options) {
@@ -105,23 +104,25 @@ ri_models = list("epi_noSeason" = updatehhh4(fixed_models$epi_noSeason,
                  "epi_season1_corr" = updatehhh4(fixed_models$epi_season1,
                                                  end_option = random_opt_test$`end_intrcpt_group|rand_corr_intercepts`, 
                                                  epi_option = random_opt_test$`epi_intrcpt_groupS1|rand_corr_intercepts`))
+gc()
 
-### Results for all of the models ----------------------------------------------
+
+### SUMMARIES OF ALL THE MODELS ------------------------------------------------
 
 print(lapply(fixed_models, summary, idx2Exp = TRUE, amplitudeShift = TRUE, maxEV = TRUE))
 
 print(lapply(ri_models, summary, idx2Exp = TRUE, amplitudeShift = TRUE, maxEV = TRUE))
 
 
-### Validation and comparison of all the models --------------------------------
+### VALIDATION AND COMPARISON OF ALL THE MODELS --------------------------------
 
 set.seed(1245)
 
-# this is again split due to the computational time
+# following lines can take ~ 35 minutes or more, depends on a computer
 owas0 <- lapply(fixed_models, oneStepAhead, tp = range(TEST)-1, type = "rolling")
 owas1 <- lapply(ri_models, oneStepAhead, tp = range(TEST)-1, type = "rolling")
 
-# all of the One Week Ahead predictionS
+# all of the One Week Ahead predictionS (=OWAS)
 owas = list("A1:epi_noSeason" = owas0$epi_noSeason,
             "A2:epi_season1" = owas0$epi_season1,
             "B1:ri_epi_noSeason" = owas1$epi_noSeason,
@@ -135,7 +136,7 @@ best_models = selectBestModel(owas, metrics = c("rps", "logs"),
 final_mod_name = substr(best_models$logs, 7, nchar(best_models$logs))
 final_model <- ri_models[[final_mod_name]] 
 
-### Plot fitted values ---------------------------------------------------------
+### PLOT THE BEST FIT ----------------------------------------------------------
 
 ## by age group
 plotHHH4_fitted_groups(final_model, end = c(2018, 26),
@@ -159,7 +160,8 @@ plotHHH4_fitted_groups(final_model, end = c(2018, 26),
                                                                  "within region", 
                                                                  "endemic")))
 
-### Maps of random effects -----------------------------------------------------
+
+### MAPS FOR RANDOM INTERCEPTS -------------------------------------------------
 
 # comp options are "end.ri(iid)" or "epi.ri(iid)"
 comp = "end.ri(iid)"
