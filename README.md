@@ -9,11 +9,17 @@ Contains R code supporting publication titled "Understanding Norovirus Reporting
 ### How to use
 
 * Clone/download the repository.<br>
-		git clone https://github.com/NikolaOndrikova/Norovirus-Reporting-Patterns.git
+```
+git clone https://github.com/NikolaOndrikova/Norovirus-Reporting-Patterns.git
+```
 * Set your working directory from R/RStudio.<br>
-		setwd('Location_on your_machine/Norovirus-Reporting-Patterns/')
+```
+setwd('Location_on your_machine/Norovirus-Reporting-Patterns/')
+```
 * Run master.R from R.<br>
-		source('./master.R') 
+```
+source('./master.R') 
+```
 
 **Note:** The data used here are synthetic, i.e. we fitted a model to the original data and generated a new data set. For this reason, the results differ from those presented in the paper, and you are likely to see some warning messages (e.g. convergence). 
 
